@@ -5,7 +5,7 @@ def main():
    
     a_map = Map('central_corridor')
     a_map.scenes.update({'central_corridor': CentralCorridor})
-    #a_map.scenes.update({'armory': WeaponArmory})
+    a_map.scenes.update({'armory': WeaponArmory})
     a_map.scenes.update({'keypad': Keypad})
     a_map.scenes.update({'bridge': TheBridge})
     a_map.scenes.update({'escape_pod': EscapePod})

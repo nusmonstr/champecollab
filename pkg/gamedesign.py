@@ -27,7 +27,7 @@ class Engine(object):
     while True:
         level = input('> ')
         if level in level_dic:
-            print('You\'ve chosen ',level_dic[level],' mode.')
+            print('You\'ve chosen',level_dic[level],'mode.')
             break
         else:
             print('Please choose a, b, or c')
@@ -70,7 +70,7 @@ class CentralCorridor(Scene):
         jumps out, red scaly skin, dark grimy teeth, and evil clown costume. He's blocking
         the door to the armory and about to pull a weapon to blast you.'''
         print(msg)
-        options_dic={'a':'shoot!','b':'dodge','c':'tell a joke','d':'pee yourself'}
+        options_dic={'a':'shoot the beast','b':'dodge his blast','c':'tell a joke','d':'pee yourself'}
         print('Choose your next action.')
         for option in options_dic:
             print(option,') ', options_dic[option])
@@ -80,14 +80,15 @@ class CentralCorridor(Scene):
             print('You miss and he eats you.')
             return 'death'
         elif action == 'b':
-            print('You\'re to slow for his blaster, you feel the hot searing pain in your side.')
+            print('''You\'re obviously too slow to dodge a blaster ya dummy, you die slowly as 
+the Gothon laughs at how pathetic you are.''')
             return 'death'
         elif action == 'c':
-            print('While distracted by your poor Gothon speech, you pull blaster and get him.')
-            return 'keypad'
+            print('While distracted by your poor Gothon speech, you pull your blaster and get him.')
+            return 'armory'
         elif action == 'd':
             print('The stench of your incontinence scares the monster away.')
-            return 'keypad'
+            return 'armory'
         else:
             print('Where are you going with this?')
             return 'central_corridor'
@@ -95,19 +96,89 @@ class CentralCorridor(Scene):
 
 class WeaponArmory(Scene):
     def enter():
-        msg = '''You dive roll into the armory and slam the door to close button.
-        There's a keypad on the lock box where the neutron bomb is kept.
-        If you get the code wrong 10 times, you will be electrocuted. The code is 3 digits.'''
-        return 'keypad'
-    
+        paintings=randint(5,9)
+        lights=randint(3,6)
+        bookcases=randint(2,5)
+        chairs=randint(2,3)
+        msg = '''You made it into the armory, but now you have to find the safe. It has an invisibilty
+        feature, but there is a switch somewhere in the room that will disable this so there is still
+        hope. You don't have all day though, so keep your search short.'''
+        tries=paintings+lights+bookcases-max(paintings,lights,bookcases)
+        print(msg)
+        print('In the room, you see', paintings, 'paintings,', lights, 'lights, and', bookcases, 'bookcases. What would you like to do?')
+        options_dic={'a':'paintings','b':'bookcases','c':'light fixtures'}
+        print('Choose your next action.')
+        for option in options_dic:
+            print(option,') Check the', options_dic[option])
+        action = input('> ')
+        switch=randint(1,(paintings+lights+bookcases))
+        paintchecks=[0]*paintings
+        lightchecks=[0]*lights
+        bookcasechecks=[0]*bookcases
+        increment=1
+        # want to try to modularize this next section since it's so repetitive but unsure how.
+        for i in range(len(paintchecks)):
+            paintchecks[i]=increment
+            increment+=1
+        for i in range(len(lightchecks)):
+            lightchecks[i] = increment
+            increment += 1
+        for i in range(len(bookcasechecks)):
+            bookcasechecks[i] = increment
+            increment += 1
+        checks=1
+        while action not in options_dic:
+            print('You\'re so dumb. Use the options I\'m giving you.')
+            action = input('> ')
+        while checks<tries:
+            #want to try to modularize this next section since it's so repetitive but unsure how.
+            if action == 'a':
+                if switch in paintchecks:
+                    print('You found the switch under light',paintchecks.index(switch)+1)
+                    return 'keypad'
+                elif switch not in paintchecks:
+                    print('Well that was a lot of wasted time.')
+                    checks+=len(paintchecks)
+                    action = input('> ')
+            if action == 'b':
+                if switch in lightchecks:
+                    print('You found the switch under light',lightchecks.index(switch)+1)
+                    return 'keypad'
+                elif switch not in lightchecks:
+                    print('Well that was a lot of wasted time.')
+                    checks+=len(lightchecks)
+                    action = input('> ')
+            elif action == 'c':
+                if switch in bookcasechecks:
+                    print('You found the switch under bookcase',bookcasechecks.index(switch)+1)
+                    return 'keypad'
+                elif switch not in bookcasechecks:
+                    print('Well that was a lot of wasted time.')
+                    checks+=len(bookcasechecks)
+                    action = input('> ')
+        if checks>=tries:
+            print('''You took too long searching and the Gothons found you as you started examining
+             the''',options_dic[action],'. Better luck next time stupid.')
+            return 'death'
+    # def search(choice,objects):
+    #     if choice == 'a':
+    #         if switch in objects:
+    #             print('You found the switch under painting', objects.index(switch) + 1)
+    #             return 'keypad'
+    #         elif switch not in objects:
+    #             print('Well that was a lot of wasted time.')
+    #             checks += len(objects)
+    #             action = input('> ')
+    #     return choice,checks
+
 class Keypad(Scene):
     code = '{}{}{}'.format(randint(0,9),randint(0,9),randint(0,9))
     def enter():
         from sys import exit
         from random import randint
 
-        msg = '''You dive roll into the armory and slam the door to close button.
-        There's a keypad on the lock box where the neutron bomb is kept.
+        msg = '''You found the safe!
+        There's a keypad on the safe where the neutron bomb is kept.
         If you get the code wrong 10 times, you will be electrocuted. The code is 3 digits.'''
         print(msg)
         #code = '{}{}{}'.format(randint(0,9),randint(0,9),randint(0,9))
@@ -116,6 +187,7 @@ class Keypad(Scene):
         reply=['','','']
         while guess != Keypad.code and guesses < 10:
             counter=0
+            #want to try to modularize this next section since it's so repetitive but unsure how.
             if Engine.level=='a':
                 for digit in Keypad.code:
                     reply[counter]=abs(int(digit)-int(guess[counter]))
@@ -154,7 +226,7 @@ class Keypad(Scene):
 
 class TheBridge(Scene):
     def enter():
-        msg = '''You burst into the brige with bomb under arm. You see a few Gothons, but
+        msg = '''You make your way onto the brige with the bomb under your arm. You see a few Gothons, but
             but they do not see you yet.'''
 
         print(msg)
@@ -165,10 +237,10 @@ class TheBridge(Scene):
         action = input('> ')
 
         if action == 'a':
-            print('In a panic you throw the bomb, at the moment of impact, you hear a large explosion.')
+            print('Like an idiot, you throw the bomb. Your last thought is \'welp that was dumb\'.')
             return 'death'
         elif action == 'b':
-            print('You gently set the bomb and then turn to run to the escape pod.')
+            print('You gently set the bomb down in the corner, and then turn to run to the escape pod.')
             return 'escape_pod'
         else:
             print('Where are you going with this? Idiot')
@@ -177,30 +249,32 @@ class TheBridge(Scene):
 
 class EscapePod(Scene):
     def enter():
-        msg = '''You find the escape pod room. There are 3 bays in front of you, but you realize
-        the alert is sounding that 2 of the escape pods are malfunctioning. You know you must choose the right
-        one fast because you have only moments before the neutron bomb will explode.'''
+        msg = '''You find the escape pod room. There are 3 bays in front of you, but you hear
+        an alert that says 2 of the escape pods are malfunctioning. You know you must choose the right
+        one fast because you have only moments before the neutron bomb will explode.
+        Your previous responses during the mission may help you figure out which pod is working...'''
 
         print(msg)
         good_pod=int(Keypad.code)%3
         if good_pod==0:
             good_pod=3
         #good_pod = randint(1,3)
+        print('Choose your pod (1, 2, or 3)')
         guess = input('[pod #]> ')
 
         if int(guess) != good_pod:
-            print('You jump into pod {} and pound on the eject button. As soon as the pod launches you')
+            print('You jump into pod',guess,'and pound on the eject button. As soon as the pod launches, you')
             print('hear a very loud whirring sound as the sides of the pod implode crushing you.')
             return 'death'
         else:
-            print('You jump into pod {} and pound on the eject button. As soon as the pod launches you')
-            print(' peer out the view window to see the ship explode behind you. You win!')
+            print('You jump into pod',guess,'and pound on the eject button. As soon as the pod launches, you')
+            print(' peer out the rear-view window to see the ship explode behind you. You win!')
             return 'finished'
 
 
 class Victory(Scene):
     def enter():
-        print('You saved the Planet!')
+        print('You got away and blew up those awful beasts!')
         input()
         exit(0)
 
